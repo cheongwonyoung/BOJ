@@ -2,68 +2,70 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
+import java.util.StringTokenizer;
 
 public class Main {
-	static String[][] arr;
-	static boolean[][] check;
-	
 	static int[] dr = {-1,1,0,0};
 	static int[] dc = {0,0,-1,1};
-	static int row, col;
-	static int maxVal = 0;
+	static char[][] arr;
+	static boolean[][] check;
+	static int l,w,maxTime;
 	
 	public static void main(String[] args) throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		String[] tem = in.readLine().split(" ");
-		row = Integer.parseInt(tem[0]);
-		col = Integer.parseInt(tem[1]);
+		// bfs로 최단 다른 육지로 갈 수 있는 최단거리들 파악
+		// 그 중 가장 오래 걸리는 곳
+		StringTokenizer st = new StringTokenizer(in.readLine());
+		l = Integer.parseInt(st.nextToken());
+		w = Integer.parseInt(st.nextToken());
 		
-		arr = new String[row][col];
-		for(int i=0; i<row; i++) {
-			tem = in.readLine().split("");
-			for(int j=0; j<col; j++) {
-				arr[i][j] = tem[j];
+		arr = new char[l][w];
+		check = new boolean[l][w];
+		
+		for(int i=0; i<l; i++) {
+			String tem = in.readLine();
+			for(int j=0; j<w; j++) {
+				arr[i][j] = tem.charAt(j);
 			}
 		}
 		
-		// L : 육지
-		// W : 바다
-		
-		for(int i=0; i<row; i++) {
-			for(int j=0; j<col; j++) {
-				if(arr[i][j].equals("L")) {					
-					check = new boolean[row][col];
-					bfs(i,j,0);
-				}
+		for(int i=0; i<l; i++) {
+			for(int j=0; j<w; j++) {
+				if(arr[i][j]=='W') continue;
+				check = new boolean[l][w];
+				bfs(i, j);
 			}
 		}
-		System.out.println(maxVal);
+		
+		System.out.println(maxTime);
+		
 	}
 
-	private static void bfs(int r, int c, int cnt) {
-		
+	private static void bfs(int row, int col) {
 		ArrayDeque<int[]> queue = new ArrayDeque<>();
-		queue.offer(new int[] {r,c,cnt});
-		check[r][c] = true;
+		queue.offer(new int[] {row, col, 0});
+		check[row][col] = true;
+
+		int time = 0;
 		while(!queue.isEmpty()) {
 			int[] temp = queue.poll();
-			r = temp[0];
-			c = temp[1];
-			cnt = temp[2];
-			if(maxVal<cnt) maxVal = cnt;
+			row = temp[0];
+			col = temp[1];
+			time = temp[2];
+			
+			if(time>maxTime) maxTime=time;
 			
 			for(int d=0; d<4; d++) {
-				int nr = r+dr[d];
-				int nc = c+dc[d];
+				int nr = dr[d]+row;
+				int nc = dc[d]+col;
 				
-				if(nr<0 || nc<0 || nr>=row || nc>=col || check[nr][nc] || arr[nr][nc].equals("W")) continue;
+				if(nr<0 || nc<0 || nr>=l || nc>=w || arr[nr][nc]=='W' ||check[nr][nc]) continue;
 				
+				queue.offer(new int[] {nr, nc, time+1});
 				check[nr][nc] = true;
-				queue.offer(new int[] {nr,nc,cnt+1});
-				
 			}
+			
+			
 		}
-		
-		
 	}
 }
