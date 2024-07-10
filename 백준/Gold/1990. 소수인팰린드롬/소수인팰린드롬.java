@@ -4,52 +4,40 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-	public static void main(String[] args) throws IOException {
-		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(in.readLine());
-		StringBuilder sb = new StringBuilder();
-		
-		int a = Integer.parseInt(st.nextToken());
-		int b = Integer.parseInt(st.nextToken());
-		
-		int range = 100000000;
-		boolean[] prime = new boolean[range+1];
-		prime[0] = true;
-		prime[1] = true;
-		
-		
-		for(int i=2; i<=Math.sqrt(range); i++) {
-			// false : 소수
-			if(!prime[i]) {
-				int j =2;
-				while(true) {
-					int num = i*j;
-					if(num>range) break;
-					prime[num] = true;
-					j++;
-				}
-			}
-		}
-		
-		for(int num=a; num<=b; num++) {
-			if(prime[num]) continue; 
-			boolean flag = isPall(String.valueOf(num));
-			if(flag) sb.append(num).append("\n");
-		}
-		
-		sb.append(-1);
-		System.out.println(sb);
-		
-		
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        boolean[] arr = new boolean[m + 1];
+        arr[1] = true;
+        for (int i = 2; i * i <= m; i++) {
+        	if(arr[i]) continue;
+            for (int j = i * i; j <= m; j += i) {
+                arr[j] = true;
+            }
+        }
+        for (int i = n; i <= m; i++) {
+            if (arr[i] == false && isPallindrome(i) == true) {
+//                System.out.println(i);
+            	sb.append(i).append("\n");
+            }
+        }
+        sb.append(-1);
+        System.out.println(sb);
+    }
 
-	private static boolean isPall(String num) {
-
-		int len = num.length();
-		for(int i=0; i<len/2; i++) {
-			if(num.charAt(i)!=num.charAt(len-1-i)) return false;
-		}
-		
-		return true;
-	}
+    public static boolean isPallindrome(int num) {
+        String s = Integer.toString(num);
+        if (s.length() == 1) {
+            return true;
+        }
+        for (int i = 0; i < s.length() / 2; i++) {
+            if (s.charAt(i) != s.charAt(s.length() - 1 - i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
